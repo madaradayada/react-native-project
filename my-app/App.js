@@ -1,6 +1,6 @@
 import { StatusBar } from "expo-status-bar";
-import { LoginScreen } from "./screens/LoginScreen";
-import { RegistrationScreen } from "./screens/RegistrationScreen";
+import { LoginScreen } from "./Screens/LoginScreen";
+import { RegistrationScreen } from "./Screens/RegistrationScreen";
 import React, { useCallback, useState, useEffect } from "react";
 import { Dimensions, StyleSheet, View } from "react-native";
 
@@ -45,7 +45,7 @@ export default function App() {
     <View onLayout={onLayoutRootView} style={{ flex: 1 }}>
       <StatusBar />
       <LoginScreen styles={styles} />
-      <RegistrationScreen />
+      {/* <RegistrationScreen /> */}
     </View>
   );
 }
