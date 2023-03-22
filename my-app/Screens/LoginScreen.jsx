@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   TextInput,
   View,
@@ -9,13 +9,28 @@ import {
   TouchableWithoutFeedback,
   Image,
   TouchableOpacity,
+  Dimensions,
+  StyleSheet,
 } from "react-native";
+import { Ionicons } from "@expo/vector-icons";
 
-export const LoginScreen = ({ styles }) => {
+const windowWidth = Dimensions.get("window").width;
+const windowHeight = Dimensions.get("window").height;
+
+export const LoginScreen = ({ navigation }) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isOpenPassword, setIsOpenPassword] = useState(false);
   const [isShowKeyboard, setIsShowKeyboard] = useState(false);
+
+  useEffect(() => {
+    const hideKeyboard = Keyboard.addListener("keyboardDidHide", () => {
+      setIsShowKeyboard(false);
+    });
+    return () => {
+      hideKeyboard.remove();
+    };
+  }, []);
 
   const keyboardHide = () => {
     setIsShowKeyboard(false);
@@ -38,59 +53,63 @@ export const LoginScreen = ({ styles }) => {
     setEmail("");
     setPassword("");
     setIsShowKeyboard(false);
+    navigation.navigate("Home");
   };
 
   return (
-    <TouchableWithoutFeedback onPress={keyboardHide}>
-      <View style={{ flex: 1 }}>
-        <Image
-          style={styles.background}
-          source={require("../images/imgBG.png")}
-          resizeMode="cover"
-        />
-        <View
-          style={{
-            ...styles.wrapper,
-            marginTop: isShowKeyboard ? 270 : 320,
-          }}
-        >
-          <View style={styles.formContainer}>
-            <Text style={styles.title}>Login</Text>
-            <KeyboardAvoidingView
-              behavior={Platform.OS == "ios" ? "padding" : "height"}
-            >
+    <KeyboardAvoidingView
+      behavior={Platform.OS === "ios" ? "padding" : "height"}
+      style={{ flex: 1 }}
+    >
+      <TouchableWithoutFeedback onPress={keyboardHide}>
+        <View style={{ flex: 1, justifyContent: "flex-end" }}>
+          <Image
+            style={styles.background}
+            source={require("../images/imgBG.png")}
+            resizeMode="cover"
+          />
+
+          <View style={styles.wrapper}>
+            <Text style={{ ...styles.title, marginTop: 32 }}>Login</Text>
+
+            <TextInput
+              style={styles.input}
+              value={email}
+              onChangeText={emailHandler}
+              placeholder="Email"
+              placeholderTextColor="#BDBDBD"
+              onPressIn={() => {
+                setIsShowKeyboard(true);
+              }}
+              onSubmitEditing={onLogin}
+            />
+            <View>
               <TextInput
                 style={styles.input}
-                value={email}
-                onChangeText={emailHandler}
-                placeholder="Email"
+                value={password}
+                onChangeText={passwordHandler}
+                secureTextEntry={!isOpenPassword}
+                placeholder="Password"
                 placeholderTextColor="#BDBDBD"
-                onFocus={() => {
+                onPressIn={() => {
                   setIsShowKeyboard(true);
                 }}
                 onSubmitEditing={onLogin}
               />
-              <View>
-                <TextInput
-                  style={styles.input}
-                  value={password}
-                  onChangeText={passwordHandler}
-                  secureTextEntry={!isOpenPassword}
-                  placeholder="Password"
-                  placeholderTextColor="#BDBDBD"
-                  onFocus={() => {
-                    setIsShowKeyboard(true);
-                  }}
-                  onSubmitEditing={onLogin}
-                />
-                <Text style={styles.show} onPress={isOpenPasswordHandler}>
-                  {isOpenPassword ? "hide" : "show"}
-                </Text>
-              </View>
-            </KeyboardAvoidingView>
-            {isShowKeyboard ? (
-              ""
-            ) : (
+              <Text style={styles.show} onPress={isOpenPasswordHandler}>
+                {isOpenPassword ? (
+                  <Ionicons
+                    name="md-eye-off-outline"
+                    size={30}
+                    color="#bdbdbd"
+                  />
+                ) : (
+                  <Ionicons name="md-eye-outline" size={30} color="#bdbdbd" />
+                )}
+              </Text>
+            </View>
+
+            {!isShowKeyboard && (
               <>
                 <TouchableOpacity
                   activeOpacity={0.8}
@@ -101,14 +120,97 @@ export const LoginScreen = ({ styles }) => {
                 </TouchableOpacity>
                 <View>
                   <Text style={styles.loginBox}>
-                    Don't have a profile? Register
+                    Don't have a profile?{" "}
+                    <Text
+                      style={{ color: "#FF6C00" }}
+                      onPress={() => navigation.navigate("Register")}
+                    >
+                      Register
+                    </Text>
                   </Text>
                 </View>
               </>
             )}
+            {/* </View> */}
           </View>
         </View>
-      </View>
-    </TouchableWithoutFeedback>
+      </TouchableWithoutFeedback>
+    </KeyboardAvoidingView>
   );
 };
+
+const styles = StyleSheet.create({
+  background: {
+    position: "absolute",
+    width: windowWidth,
+    height: windowHeight,
+    top: 0,
+    left: 0,
+  },
+
+  wrapper: {
+    backgroundColor: "#fff",
+    borderTopLeftRadius: 30,
+    borderTopRightRadius: 30,
+    paddingHorizontal: 16,
+  },
+  input: {
+    width: "100%",
+    height: 50,
+    padding: 16,
+    backgroundColor: "#F6F6F6",
+    borderWidth: 1,
+    borderColor: "#E8E8E8",
+    marginBottom: 16,
+    borderRadius: 8,
+    fontFamily: "Roboto-Regular",
+  },
+  button: {
+    backgroundColor: "#FF6C00",
+    borderRadius: 25.5,
+    padding: 16,
+    marginTop: 30,
+    marginBottom: 16,
+  },
+  btnTitle: {
+    fontSize: 16,
+    lineHeight: 19,
+    textAlign: "center",
+    color: "#ffffff",
+    fontFamily: "Roboto-Regular",
+  },
+  loginBox: {
+    textAlign: "center",
+    fontSize: 16,
+    lineHeight: 19,
+    fontFamily: "Roboto-Regular",
+    marginBottom: 70,
+  },
+  show: {
+    position: "absolute",
+    right: 10,
+    top: 9,
+  },
+  title: {
+    marginBottom: 30,
+    fontSize: 30,
+    textAlign: "center",
+    fontFamily: "Roboto-Medium",
+  },
+  avatar: {
+    width: 120,
+    height: 120,
+    borderRadius: 16,
+    backgroundColor: "#F6F6F6",
+
+    position: "absolute",
+    top: -60,
+    left: (windowWidth - 121) / 2,
+  },
+
+  addPhoto: {
+    position: "absolute",
+    right: -12.5,
+    bottom: 14,
+  },
+});
