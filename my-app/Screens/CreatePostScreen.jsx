@@ -23,8 +23,6 @@ export const CreatePostScreen = ({ navigation }) => {
   const [location, setLocation] = useState("");
   const [locationCoords, setLocationCoords] = useState(null);
 
-  // const [type, setType] = useState(Camera.Constants.Type.back);
-
   useEffect(() => {
     (async () => {
       const { status } = await Camera.requestCameraPermissionsAsync();
@@ -104,7 +102,6 @@ export const CreatePostScreen = ({ navigation }) => {
                     onPress={async () => {
                       if (cameraRef) {
                         const { uri } = await cameraRef.takePictureAsync();
-                        // await MediaLibrary.createAssetAsync(uri);
                         await setPhoto(uri);
                         const location =
                           await Location.getCurrentPositionAsync();
@@ -180,7 +177,6 @@ const styles = StyleSheet.create({
 
     borderBottomColor: "rgba(0, 0, 0, 0.3)",
     borderBottomWidth: 1,
-    // borderWidth: 1,
   },
   screenTitle: {
     fontFamily: "Roboto-Medium",
@@ -197,9 +193,6 @@ const styles = StyleSheet.create({
   },
   addPhoto: {
     marginBottom: 32,
-
-    // borderWidth: 1,
-    // borderColor: "red",
   },
   photo: {
     justifyContent: "center",
@@ -239,7 +232,6 @@ const styles = StyleSheet.create({
     fontFamily: "Roboto-Regular",
     fontSize: 16,
     lineHeight: 19,
-
     color: "#000000",
   },
   button: {
@@ -258,11 +250,8 @@ const styles = StyleSheet.create({
     width: "100%",
     backgroundColor: "#ffffff",
     justifyContent: "center",
-    // alignItems: "flex-end",
     flexDirection: "row",
     paddingVertical: 9,
-    // borderTopColor: "rgba(0, 0, 0, 0.3)",
-    // borderTopWidth: 1,
   },
   footerIcon: {
     marginRight: 31,

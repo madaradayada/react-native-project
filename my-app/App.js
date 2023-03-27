@@ -15,7 +15,6 @@ export default function App() {
   useEffect(() => {
     async function prepare() {
       try {
-        // Pre-load fonts, make any API calls you need to do here
         await Font.loadAsync({
           "Roboto-Regular": require("./fonts/Roboto-Regular.ttf"),
           "Roboto-Medium": require("./fonts/Roboto-Medium.ttf"),

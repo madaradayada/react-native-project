@@ -114,7 +114,6 @@ export const DefaultScreen = ({ navigation, route }) => {
         </View>
         <View style={{ paddingHorizontal: 16 }}>
           <FlatList
-            // style={{ paddingBottom: 100 }}
             data={posts}
             renderItem={Item}
             keyExtractor={(item) => item.photo}
@@ -133,9 +132,7 @@ const styles = StyleSheet.create({
   header: {
     paddingVertical: 11,
     paddingTop: 45,
-
     borderBottomColor: "rgba(0, 0, 0, 0.3)",
-
     borderBottomWidth: 1,
   },
   screenTitle: {
@@ -183,7 +180,6 @@ const styles = StyleSheet.create({
     width: "100%",
     backgroundColor: "#ffffff",
     justifyContent: "center",
-    // alignItems: "flex-end",
     flexDirection: "row",
     paddingVertical: 9,
     borderTopColor: "rgba(0, 0, 0, 0.3)",

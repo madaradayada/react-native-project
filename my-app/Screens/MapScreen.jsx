@@ -65,15 +65,11 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   header: {
-    // position: "absolute",
-    // top: 0,
-    // left: 0,
     width: "100%",
     paddingVertical: 11,
     paddingTop: 30,
     borderBottomColor: "rgba(0, 0, 0, 0.3)",
     borderBottomWidth: 1,
-    // borderWidth: 1,
   },
   screenTitle: {
     fontFamily: "Roboto-Medium",
