@@ -1,4 +1,4 @@
-import { Home } from "../../screens/Home/Home";
+import { Home } from "../../Screens/Home";
 import { useRoute } from "../../router";
 import { NavigationContainer } from "@react-navigation/native";
 import { useDispatch, useSelector } from "react-redux";

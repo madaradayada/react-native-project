@@ -3,9 +3,9 @@ import { Feather } from "@expo/vector-icons";
 import { View } from "react-native";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 
-import { PostsScreen } from "../PostsScreen";
-import { CreatePostScreen } from "../CreatePostScreen";
-import { ProfileScreen } from "../ProfileScreen";
+import { PostsScreen } from "./PostsScreen";
+import { CreatePostScreen } from "./CreatePostScreen";
+import { ProfileScreen } from "./ProfileScreen";
 
 export const HomeTabs = createBottomTabNavigator();
 
