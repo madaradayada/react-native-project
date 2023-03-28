@@ -1,9 +1,8 @@
-import { useState, useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import {
   TextInput,
   View,
   Text,
-  StyleSheet,
   KeyboardAvoidingView,
   Keyboard,
   Platform,
@@ -11,18 +10,22 @@ import {
   Image,
   TouchableOpacity,
   Dimensions,
+  StyleSheet,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
+import { useDispatch } from "react-redux";
+import { logIn } from "../redux/auth/authOperations";
 
 const windowWidth = Dimensions.get("window").width;
 const windowHeight = Dimensions.get("window").height;
 
-export const RegistrationScreen = ({ navigation }) => {
-  const [name, setName] = useState("");
+export const LoginScreen = ({ navigation }) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isOpenPassword, setIsOpenPassword] = useState(false);
   const [isShowKeyboard, setIsShowKeyboard] = useState(false);
+
+  const dispatch = useDispatch();
 
   useEffect(() => {
     const hideKeyboard = Keyboard.addListener("keyboardDidHide", () => {
@@ -38,9 +41,6 @@ export const RegistrationScreen = ({ navigation }) => {
     Keyboard.dismiss();
   };
 
-  const nameHandler = (text) => {
-    setName(text);
-  };
   const emailHandler = (text) => {
     setEmail(text);
   };
@@ -51,19 +51,11 @@ export const RegistrationScreen = ({ navigation }) => {
     setIsOpenPassword(!isOpenPassword);
   };
 
-  const onRegister = () => {
-    if (name !== "" && email !== "" && password !== "") {
-      console.log({ name, email, password });
-    } else {
-      setIsShowKeyboard(false);
-      return alert("Fill in all the fields!!!");
-    }
-
-    setName("");
+  const onLogin = () => {
+    dispatch(logIn({ email, password }));
     setEmail("");
     setPassword("");
     setIsShowKeyboard(false);
-    navigation.navigate("Home");
   };
 
   return (
@@ -80,28 +72,8 @@ export const RegistrationScreen = ({ navigation }) => {
           />
 
           <View style={styles.wrapper}>
-            {/* <View style={styles.formContainer}> */}
-            {/* <View style={styles.avaWrapper}> */}
-            <View style={styles.avatar}>
-              <View style={styles.addPhoto}>
-                <Image source={require("../images/add.png")} />
-              </View>
-            </View>
-            {/* </View> */}
+            <Text style={{ ...styles.title, marginTop: 32 }}>Login</Text>
 
-            <Text style={{ ...styles.title, marginTop: 92 }}>Registration</Text>
-
-            <TextInput
-              style={styles.input}
-              value={name}
-              onChangeText={nameHandler}
-              placeholder="Username"
-              placeholderTextColor="#BDBDBD"
-              onPressIn={() => {
-                setIsShowKeyboard(true);
-              }}
-              onSubmitEditing={onRegister}
-            />
             <TextInput
               style={styles.input}
               value={email}
@@ -111,7 +83,7 @@ export const RegistrationScreen = ({ navigation }) => {
               onPressIn={() => {
                 setIsShowKeyboard(true);
               }}
-              onSubmitEditing={onRegister}
+              onSubmitEditing={onLogin}
             />
             <View>
               <TextInput
@@ -124,7 +96,7 @@ export const RegistrationScreen = ({ navigation }) => {
                 onPressIn={() => {
                   setIsShowKeyboard(true);
                 }}
-                onSubmitEditing={onRegister}
+                onSubmitEditing={onLogin}
               />
               <Text style={styles.show} onPress={isOpenPasswordHandler}>
                 {isOpenPassword ? (
@@ -143,19 +115,19 @@ export const RegistrationScreen = ({ navigation }) => {
               <>
                 <TouchableOpacity
                   activeOpacity={0.8}
-                  onPress={onRegister}
+                  onPress={onLogin}
                   style={styles.button}
                 >
-                  <Text style={styles.btnTitle}>Register</Text>
+                  <Text style={styles.btnTitle}>Login</Text>
                 </TouchableOpacity>
                 <View>
                   <Text style={styles.loginBox}>
-                    Already have a profile?{" "}
+                    Don't have a profile?{" "}
                     <Text
                       style={{ color: "#FF6C00" }}
-                      onPress={() => navigation.navigate("Login")}
+                      onPress={() => navigation.navigate("Register")}
                     >
-                      Log in
+                      Register
                     </Text>
                   </Text>
                 </View>
@@ -194,7 +166,6 @@ const styles = StyleSheet.create({
     marginBottom: 16,
     borderRadius: 8,
     fontFamily: "Roboto-Regular",
-    color: "#bdbdbd",
   },
   button: {
     backgroundColor: "#FF6C00",
@@ -227,21 +198,5 @@ const styles = StyleSheet.create({
     fontSize: 30,
     textAlign: "center",
     fontFamily: "Roboto-Medium",
-  },
-  avatar: {
-    width: 120,
-    height: 120,
-    borderRadius: 16,
-    backgroundColor: "#F6F6F6",
-
-    position: "absolute",
-    top: -60,
-    left: (windowWidth - 121) / 2,
-  },
-
-  addPhoto: {
-    position: "absolute",
-    right: -12.5,
-    bottom: 14,
   },
 });

@@ -1,45 +1,17 @@
-import { createStackNavigator } from "@react-navigation/stack";
-import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
-
-import { PostsScreen } from "./Screens/PostsScreen";
-import { CreatePostScreen } from "./Screens/CreatePostScreen";
-import { ProfileScreen } from "./Screens/ProfileScreen";
-import { Home } from "./Screens/Home";
-import { LoginScreen } from "./Screens/LoginScreen";
-import { RegistrationScreen } from "./Screens/RegistrationScreen";
-
 import { Ionicons } from "@expo/vector-icons";
 import { Feather } from "@expo/vector-icons";
 import { View } from "react-native";
+import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 
-const AuthStack = createStackNavigator();
-const HomeTabs = createBottomTabNavigator();
+import { PostsScreen } from "../PostsScreen";
+import { CreatePostScreen } from "../CreatePostScreen";
+import { ProfileScreen } from "../ProfileScreen";
 
-export const useRoute = (isAuth) => {
-  if (!isAuth) {
-    return (
-      <AuthStack.Navigator initialRouteName="Login">
-        <AuthStack.Screen
-          options={{ headerShown: false }}
-          name="Login"
-          component={LoginScreen}
-        />
-        <AuthStack.Screen
-          options={{ headerShown: false }}
-          name="Register"
-          component={RegistrationScreen}
-        />
-        <AuthStack.Screen
-          options={{ headerShown: false }}
-          name="Home"
-          component={Home}
-        />
-      </AuthStack.Navigator>
-    );
-  }
+export const HomeTabs = createBottomTabNavigator();
 
+export const Home = () => {
   return (
-    <HomeTabs.Navigator>
+    <HomeTabs.Navigator initialRouteName={"Posts"}>
       <HomeTabs.Screen
         options={{
           headerShown: false,

@@ -19,14 +19,8 @@ export const MapScreen = ({ navigation, route }) => {
       if (status !== "granted") {
         console.log("Permission to access location was denied");
       }
-      if (route.params) {
-        const coords = {
-          latitude: route.params.latitude,
-          longitude: route.params.longitude,
-        };
-        setLocation(coords);
-      }
     };
+    setLocation(route.params);
   }, [route.params]);
 
   return (
@@ -67,7 +61,7 @@ const styles = StyleSheet.create({
   header: {
     width: "100%",
     paddingVertical: 11,
-    paddingTop: 30,
+    paddingTop: 60,
     borderBottomColor: "rgba(0, 0, 0, 0.3)",
     borderBottomWidth: 1,
   },
@@ -78,7 +72,7 @@ const styles = StyleSheet.create({
     textAlign: "center",
   },
   mapStyle: {
+    flex: 1,
     width: Dimensions.get("window").width,
-    height: Dimensions.get("window").height - 120,
   },
 });

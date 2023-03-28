@@ -13,6 +13,10 @@ import {
 } from "react-native";
 import * as MediaLibrary from "expo-media-library";
 import * as Location from "expo-location";
+import { db, storage } from "../firebase/config";
+import { nanoid } from "@reduxjs/toolkit";
+import { useSelector } from "react-redux";
+import { selectUser } from "../redux/auth/authSelectors";
 
 export const CreatePostScreen = ({ navigation }) => {
   const [hasPermission, setHasPermission] = useState(null);
@@ -23,8 +27,12 @@ export const CreatePostScreen = ({ navigation }) => {
   const [location, setLocation] = useState("");
   const [locationCoords, setLocationCoords] = useState(null);
 
+  const { name, userId } = useSelector(selectUser);
+
   useEffect(() => {
     (async () => {
+      await Location.requestForegroundPermissionsAsync();
+
       const { status } = await Camera.requestCameraPermissionsAsync();
       await MediaLibrary.requestPermissionsAsync();
 
@@ -39,9 +47,29 @@ export const CreatePostScreen = ({ navigation }) => {
     return <Text>No access to camera</Text>;
   }
 
-  const createPost = () => {
-    const post = { photo, title, location, locationCoords };
-    navigation.navigate("Default", post);
+  const uploadPhoto = async () => {
+    const res = await fetch(photo);
+    const newPhoto = await res.blob();
+    const photoId = nanoid();
+    await storage.ref(`photos/${photoId}`).put(newPhoto);
+    const photoURL = await storage
+      .ref("photos")
+      .child(photoId)
+      .getDownloadURL();
+    return photoURL;
+  };
+
+  const uploadPost = async () => {
+    const photoUrl = await uploadPhoto();
+    const id = nanoid();
+    await db
+      .collection("posts")
+      .add({ id, name, userId, photoUrl, title, location, locationCoords });
+  };
+
+  const createPost = async () => {
+    await uploadPost();
+    navigation.navigate("Default");
     setPhoto(null);
     setTitle("");
     setLocation("");
@@ -74,14 +102,6 @@ export const CreatePostScreen = ({ navigation }) => {
                       position: "absolute",
                     }}
                   />
-                  <TouchableOpacity
-                    style={styles.cameraBox}
-                    onPress={() => {
-                      setPhoto(null);
-                    }}
-                  >
-                    <Image source={require("../images/camera.png")} />
-                  </TouchableOpacity>
                 </>
               ) : (
                 <Camera
@@ -152,6 +172,7 @@ export const CreatePostScreen = ({ navigation }) => {
               ...styles.button,
               backgroundColor:
                 photo && title && location ? "#FF6C00" : "#f6f6f6",
+              color: photo && title && location ? "#f6f6f6" : "#bdbdbd",
             }}
             onPress={createPost}
           >
@@ -173,7 +194,7 @@ const styles = StyleSheet.create({
   },
   header: {
     paddingVertical: 11,
-    paddingTop: 45,
+    paddingTop: 60,
 
     borderBottomColor: "rgba(0, 0, 0, 0.3)",
     borderBottomWidth: 1,
@@ -232,6 +253,7 @@ const styles = StyleSheet.create({
     fontFamily: "Roboto-Regular",
     fontSize: 16,
     lineHeight: 19,
+
     color: "#000000",
   },
   button: {
@@ -242,7 +264,6 @@ const styles = StyleSheet.create({
   },
   buttonTitle: {
     textAlign: "center",
-    color: "#bdbdbd",
   },
   footer: {
     position: "absolute",
@@ -252,8 +273,5 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     flexDirection: "row",
     paddingVertical: 9,
-  },
-  footerIcon: {
-    marginRight: 31,
   },
 });

@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   StyleSheet,
   Text,
@@ -7,23 +7,39 @@ import {
   TouchableOpacity,
   FlatList,
 } from "react-native";
+import { useDispatch, useSelector } from "react-redux";
+import { db } from "../firebase/config";
+import { logOut } from "../redux/auth/authOperations";
+import { selectUser } from "../redux/auth/authSelectors";
 
-export const DefaultScreen = ({ navigation, route }) => {
+export const DefaultScreen = ({ navigation }) => {
   const [posts, setPosts] = useState([]);
-  useEffect(() => {
-    if (route.params) {
-      setPosts([...posts, route.params]);
+  const dispatch = useDispatch();
+  const { name, email } = useSelector(selectUser);
+
+  const getPosts = async () => {
+    try {
+      await db.collection("posts").onSnapshot((snapshot) => {
+        let posts = [];
+        snapshot.forEach((doc) => posts.push(doc.data()));
+        setPosts(posts);
+      });
+    } catch (e) {
+      console.log(e.message);
     }
-    console.log(posts);
-  }, [route.params]);
+  };
+
+  useEffect(() => {
+    getPosts();
+  }, []);
 
   const Item = ({ item }) => {
-    const { photo, title, location, locationCoords } = item;
+    const { id, photoUrl, title, location, locationCoords } = item;
     return (
       <View style={{ marginBottom: 24 }}>
         <Image
           style={{ width: "100%", height: 240, borderRadius: 8 }}
-          source={{ uri: photo }}
+          source={{ uri: photoUrl }}
         />
         <Text
           style={{
@@ -49,7 +65,14 @@ export const DefaultScreen = ({ navigation, route }) => {
                 alignItems: "center",
               }}
             >
-              <TouchableOpacity onPress={() => navigation.navigate("Comments")}>
+              <TouchableOpacity
+                onPress={() =>
+                  navigation.navigate("Comments", {
+                    postId: id,
+                    photoUrl: photoUrl,
+                  })
+                }
+              >
                 <Image
                   style={{ marginRight: 6 }}
                   source={require("../images/commentIcon.png")}
@@ -93,7 +116,7 @@ export const DefaultScreen = ({ navigation, route }) => {
         <Text style={styles.screenTitle}>Posts</Text>
         <TouchableOpacity
           activeOpacity={0.8}
-          onPress={() => navigation.navigate("Login")}
+          onPress={() => dispatch(logOut())}
         >
           <Image
             style={{ position: "absolute", right: 16, bottom: 10 }}
@@ -101,22 +124,22 @@ export const DefaultScreen = ({ navigation, route }) => {
           />
         </TouchableOpacity>
       </View>
-      <View style={{ marginBottom: 320 }}>
+      <View>
         <View style={styles.userWrapper}>
           <Image
             style={styles.userAvatar}
             source={require("../images/userAva.jpg")}
           />
           <View>
-            <Text style={styles.userName}>Natali Romanova</Text>
-            <Text style={styles.userEmail}>email@example.com</Text>
+            <Text style={styles.userName}>{name}</Text>
+            <Text style={styles.userEmail}>{email}</Text>
           </View>
         </View>
         <View style={{ paddingHorizontal: 16 }}>
           <FlatList
             data={posts}
             renderItem={Item}
-            keyExtractor={(item) => item.photo}
+            keyExtractor={(item) => item.id}
           />
         </View>
       </View>
@@ -128,11 +151,14 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#ffffff",
+    paddingBottom: 340,
   },
   header: {
     paddingVertical: 11,
-    paddingTop: 45,
+    paddingTop: 60,
+
     borderBottomColor: "rgba(0, 0, 0, 0.3)",
+
     borderBottomWidth: 1,
   },
   screenTitle: {
@@ -165,27 +191,9 @@ const styles = StyleSheet.create({
     lineHeight: 13,
     color: "rgba(33, 33, 33, 0.8)",
   },
-  postsWrapper: {
-    paddingHorizontal: 16,
-    marginBottom: 70,
-  },
   contentText: {
     fontSize: 16,
     lineHeight: 19,
     color: "#212121",
-  },
-  footer: {
-    position: "absolute",
-    bottom: 0,
-    width: "100%",
-    backgroundColor: "#ffffff",
-    justifyContent: "center",
-    flexDirection: "row",
-    paddingVertical: 9,
-    borderTopColor: "rgba(0, 0, 0, 0.3)",
-    borderTopWidth: 1,
-  },
-  footerIcon: {
-    marginRight: 31,
   },
 });

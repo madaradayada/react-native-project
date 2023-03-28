@@ -1,23 +1,23 @@
-import { StatusBar } from "expo-status-bar";
-
 import React, { useCallback, useState, useEffect } from "react";
-import { Dimensions, StyleSheet, View } from "react-native";
+import { View } from "react-native";
 
 import * as Font from "expo-font";
 import * as SplashScreen from "expo-splash-screen";
-import { NavigationContainer } from "@react-navigation/native";
-import { useRoute } from "./router";
+import { Provider } from "react-redux";
+import { store } from "./src/redux/store";
+import { Main } from "./src/components/Main/Main";
 
 SplashScreen.preventAutoHideAsync();
 
 export default function App() {
   const [isReady, setIsReady] = useState(false);
+
   useEffect(() => {
     async function prepare() {
       try {
         await Font.loadAsync({
-          "Roboto-Regular": require("./fonts/Roboto-Regular.ttf"),
-          "Roboto-Medium": require("./fonts/Roboto-Medium.ttf"),
+          "Roboto-Regular": require("./src/fonts/Roboto-Regular.ttf"),
+          "Roboto-Medium": require("./src/fonts/Roboto-Medium.ttf"),
         });
       } catch (e) {
         console.warn(e);
@@ -39,12 +39,11 @@ export default function App() {
     return null;
   }
 
-  const routing = useRoute(false);
-
   return (
-    <View onLayout={onLayoutRootView} style={{ flex: 1 }}>
-      <NavigationContainer>{routing}</NavigationContainer>
-      {/* <Map /> */}
-    </View>
+    <Provider store={store}>
+      <View onLayout={onLayoutRootView} style={{ flex: 1 }}>
+        <Main />
+      </View>
+    </Provider>
   );
 }
